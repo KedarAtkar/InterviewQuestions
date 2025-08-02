@@ -1,0 +1,400 @@
+AWS:
+
+Types of endpoints :- VPC endpoint, s3 endpoint
+----VPC Endpoints: Private connection to public AWS services
+
+Types of VPC endpoints:
+----Interface used for (e.g. SNS, SQS, ECR, etc.)
+	Gateway: Used for S3 and DynamoDB
+	Gateway Load Balancer Endpoints: used for Integrating third-party security appliances (firewalls, packet inspection tools)
+
+S3 bucket policies
+Cross account access
+—from ec2 instance to s3 bucket
+—lambda access from one account to another account ec2 instance(VPC peering)
+
+AWS cognito
+----aws cognito user pools -- user db/ help with the identity / log in
+----aws cognito identy pools -- once logged in decides the access(this user is allowed to access which resources)
+
+difference between sg and nacl
+---level, apply on all or selected , application order, allow & deny,statefull(security groups- 2 way allowed default) & stateless(nacl)
+
+difference between public and private subnet
+----Public subnet – The subnet has a direct route to an internet gateway.
+					Resources in a public subnet can access the public internet. 
+					Resouces have public ip address.
+	Private subnet – The subnet does not have a direct route to an internet gateway.
+					 Resources in a private subnet require a NAT device to access the public internet.
+					 Resouces have only private ip address.
+
+identify with just watching the cidr block whether the subnet is private or public
+----In Amazon Virtual Private Cloud (VPC), a private subnet is a network within a VPC that doesn't have a direct route to an internet gateway. 
+	Resources in a private subnet need a NAT device to access the public internet. 
+	10.0.0.0 – 10.255.255.255
+	172.16.0.0 – 172.31.255.255
+	192.168.0.0 – 192.168.255.255
+
+how will you design the vpc and subnet for the 2 tier application. how many subnets?where will you put the load balancer ? where will you put the ec2 instances, in public or private subnt and why?
+
+vpc cidr block will be private or public ip?
+----private
+
+what are storage classes in s3 aws
+-----S3 Standard
+     S3 Intelligent-Tiering*
+     S3 Express One Zone**
+     S3 Standard-IA(infrequent access)
+     S3 One Zone-IA**
+     S3 Glacier Instant Retrieval
+     S3 Glacier Flexible Retrieval***
+     S3 Glacier Deep Archive**
+
+if the existing vpc is only left with very little ip addresses what will you do.can we add multiple cidrs?
+----yes we can add 50 cidrs for one vpc
+
+when to use EC2 and lambda
+----EC2 would be preferable when consistent workloads are considerd, access to the servers, etc
+
+How to make the EC2 instance present in the public subnet as private without doing any change in the route table, NACL, security group?
+----Detach its public IP
+
+What is ENI and its role?
+----The resources which assign the private and public ip address to the EC2 instances or other resources are controlled by the ENI.
+When auto assign public IP is enabled, ENI will be having one public IP address.
+If we want to detach this public IP from the EC2 instance, select EC2 INSTANCE -> networking -> network interface -> select the ENI -> Manage IP -> Disable the auto assign IP address. 
+
+Time restricted access to s3 object (example:- allow access to the object for 10 mins only)
+----presigned url
+
+Types of cloudwatch events
+----Scheduled events
+	AWS service events
+	Custom events
+	
+S3 bucket object should be deleted after 6 months
+----Lifecycle rule
+
+S3 bucket is a global or regional service
+----Regional serivce
+
+Can we create a s3 bucket with the same name in different regions
+----Amazon S3 bucket names are globally unique — across all AWS accounts and regions.
+	Once a bucket name is used (by anyone in the world), you can't reuse it unless that bucket is deleted and the name becomes available.
+
+EC2 instance wants to access objects in the S3 bucket
+----EC2 instance in private subnet:
+	-----Create VPC endpoint of type Gateway endpoint which will help you in connecting to S3 bucket. VPC endpoint will create private network to make connection from EC2 to S3
+	EC2 instance in public subnet:
+	----Create a role, attach the required policies and update the bucket policies if required.
+	
+Permisson boundary in AWS-IAM
+Root volume attached to ec2 ran out of space
+Which region are you using
+S3 access from another account
+Backend services for AWS Lambda
+VPC Peering and Transit gateway
+Same account two s3 buckets access in between them(s3 cors)
+How to stop db on Friday night and start on Monday morning. Developers only working on db from Monday to Friday I want to save the cost. How will u achieve this.(example :- write the lambda function to do this )
+Detailed steps to increase the size of EBS volume
+Increase disk space in Linux server in aws(lsblk, increase partition size etc) 
+cross account access
+autoscaling policies
+what will you do if the ec2 instance crashes
+connect on prem data center with aws
+gateway endpoint vs interface endpoint
+cidr block
+transit gateway and its route table
+cross account access-assume role
+how can i get the access in all these 100 accounts.
+what kind of instance are you using in production?
+where do you store the git access tokens
+S3 object locking, if acl is denied and iam is allowing will you able to access the object
+transit gateway
+customer gateway
+how will the ec2 instances in the private subnets will access the internet if they want to download something?
+internet gateway vs NAT gateway
+EC2 user data if fails, where will you check?
+what are service accounts in aws?
+healthcheck for the asg ? how will you know if certain node gets into any issue?
+privatelink
+multiple vpcs connection
+Outbound traffic is not able to go from pod
+-------------------------------------------------------------------------------------
+Docker:
+
+Docker immutability and mutable
+Docker remove cache command
+Can u delete the image if its running the container , any way we can delete it what will happen if we force delete it
+Multi-stage Dockerfile
+How to reduce the size of the image
+Types of networks
+-------------------------------------------------------------------------------------
+Terraform:
+
+Passing output from one module to another in terraform block(hint : depends on block, resource block, ID of the resource)
+----
+module A:
+output "vpc_id" {
+  value = aws_vpc.main.id
+}
+/////////////////////////////////
+module B:
+module "moduleB" {
+  source = "./modules/moduleB"
+
+vpc_id = module.moduleA.vpc_id  # <== Passing output as input
+depends_on = [module.moduleA]
+}
+
+error we get when two people apply the terraform at the same time
+----409 conflict errors
+
+what if one ec2 instance should be with old ami and other updated configurations and other newly created ec2 instances with update ec2 instance?
+----lifecyle{ignore changes{ami=false}}
+
+terraform state merging
+----terraform state mv
+	terraform state mv -state-out=<base statefile copy> -state=<statefile1 copy> <item address> <item address>
+	
+what exactly will happen when we execte the below commands
+terraform init
+----will download the basic required plugins from the terraform registry, example-provider plugins
+terraform plan
+----will first try to acquire lock on state file.
+
+Count param in terraform.  
+Terraform workspace state file separation for prod , dev env
+VPC created manually, terraform for lambda function. I want to use this VPC id  in terraform . How to do it (data source)
+Terraform dynamic block to create ingress rules for security group
+terraform version
+terraform functions
+can we add count for the module
+what if we have multiple regions and we have to use the module
+terraform import
+terraform data source
+Terraform immutability and mutable 
+What is backend in terraform?
+Terraform loop	
+-------------------------------------------------------------------------------------
+Linux:
+
+Basics error codes  403, 404, 401
+----401-
+----403-
+----404-
+
+chown vs chmod command
+----chown - change the ownership of file/directory
+	chmod - change the access for the file/directory (1-x 2-w 4-r,  owner, group, and others)
+
+ssh command default port
+----22
+
+Disk space issue du, df - h , top, htop, lsblk.
+Linux server slow performance(process using ps, size using df-h, top command etc)
+Particular directory in Linux how much memory particular file is consuming(du command)
+
+-------------------------------------------------------------------------------------
+CI/CD:
+
+There is a module in git repo and multiple teams are using it. but we want a slight modification and use it.
+---->git tags
+
+Continuous Delivery vs Continuous Deployment
+----When code is deployed without any manual intervention after the CI part , it is referred as continuous deployment
+----If it's delivered only when it is required, like taking down time from customer and then deploy and then do sanity,etc. Manual intervention is requied. 
+
+Multibranch jenkins pipeline
+Sonarqube quality gates
+Maven
+Choice parameter in Jenkins
+Cache made from Jenkins needs to be removed -  set up bash scripting and corn tab
+GitHub webhooks
+Tag in github(tag in github)
+Jenkins different slaves for diffferent branches (in script there is agent block there u can mention this)
+Send the notification when the CI/CD job fails
+Work directory in which we can see the workspaces
+Parametrized pipeline
+-------------------------------------------------------------------------------------
+Random:
+Process to deploy the hotfix
+when to choose rollback and blue green
+stateful vs stateless apps
+-------------------------------------------------------------------------------------
+Kubernetes:
+
+K8S Architecture:
+----
+	Master Node:
+		API Server
+		ETCD
+		Scheduler
+		Controller Manager
+		Cloud Controller Manager
+	Worker Node:
+		Container Runtime
+		Kubelet
+		Kube-proxy
+	
+Communication of pod in 2 namespace
+----network policies
+
+Live monitoring command for pods
+----kubectl get pods -w OR kubectl get pods --watch
+
+Segregating micro service
+----Namespace
+
+Challenges :
+----Pods in pending state
+----Argo cd , terraform race condition
+
+how do you segregate the applications
+----Namespace
+
+how do you segregated the pods in the Availability zones
+----Pod Topology Spread Constraints
+
+Anti-affinity vs Daemonset
+----If I have 10 nodes and 8 pods and want pods to be deployed on different nodes(no 2 same deployment pods on single node), I will go with anti-affinity.
+	If I have some applicaton which scraps the metrics, like Prometheous, Dynatrace< will go with the Daemonset, because it will create a pod on every node(10 pods, one on each node)
+
+Probes in Kubernetes
+----Liveness :- if output of this probe is 0 its fine, if it's non-zero it restarts the container.This probe determines if a container is still "alive" and functioning as expected. Its primary purpose is to detect deadlocks or other states where an application is running but unable to make progress. If a liveness probe fails, Kubernetes will restart the container, aiming to restore its functionality. This helps ensure the application's availability by recovering from internal errors.
+----Readiness :- know when a container is ready to start accepting traffic.This probe determines if a container is ready to accept incoming network traffic. It is crucial for applications that require a certain startup time, dependencies to be met, or specific conditions to be fulfilled before they can serve requests. If a readiness probe fails, Kubernetes will temporarily remove the Pod from the Service's load balancer, preventing new traffic from being routed to it until the probe succeeds again. This ensures that only healthy and fully operational instances receive traffic, preventing requests from being sent to an unready application.
+----Startup :- know when a container application has started. If such a probe is configured, liveness and readiness probes do not start until it succeeds, making sure those probes don't interfere with the application startup. This can be used to adopt liveness checks on slow starting containers, avoiding them getting killed by the kubelet before they are up and running. Used to confirm the successful initialization of an application within a container.If a container fails its startup probe, Kubernetes will kill the container according to the pod's restartPolicy. 
+
+	
+Secrets vs configmap
+----One of the reason is that we can apply granular RBAC to the configmaps.
+	Kubernetes treats Secrets as sensitive: enables built-in encryption at rest and secure memory handling.
+	ConfigMaps are not designed for sensitive data: they are stored in plaintext in etcd and exposed more openly.
+	Secrets have stricter RBAC access control by default.
+	Operationally safer: tools and workloads treat Secrets with security in mind (e.g., masking, restricted logs/UI visibility).
+	Using Secrets ensures that Kubernetes enforces best practices for handling sensitive data — something ConfigMaps can’t do, even if you encrypt the content yourself.
+
+Addons for eks
+---
+1. amazon vpc cni
+2. kube proxy
+3. core dns
+4. 
+
+What pods can you see in the EKS Kube-System pods
+CNS driver to store k8s secrets, AWS secrets 
+What extra benefits I get when I can store that same data in the configmaps after encoding it with base64 (fine grained access for the data stored in secrets, etc)
+session affinity
+request flow from loadbalancer to the pod
+kubernetes version
+kubernetes version upgrade
+what is the storage class
+can we rollback using helm chart
+what kind of storage are you using for k8s
+how do use persistent volumes?
+statefulset vs deployment?
+disaster recovery plan for eks cluster
+if two datacenters are created in multiple regions for DR purpose then how these two communicate with each other?
+what is the K8S version that we have used.
+what are the annotations in the k8s?
+what is the lifecycle/ states of pod?
+why does the LOADBALANCER svc in K8S by default always create the alb ?
+Difference between deployment and replica sets?
+if the traffic on your application increases then how will the pod know whether it is serving more traffic?
+k8s deployment strategy
+Types of services in k8s
+which service to be created and when. like when will you choose to create a clusterIP, Nodeport, Loadbalancer, ExternalName, etc.
+pod pending, troubleshoot
+What all pods can you see in the EKS Kube-System namespace.
+-------------------------------------------------------------------------------------
+Python:
+
+what if i have 100 accounts and i need to write the script to get the details of the ec2 instances in it
+
+python api data pull(consume) and push
+#######################################################
+import requests
+urlValues={}
+url = "https://public.karat.io/content/urls2.txt"
+response = requests.get(url)
+urlList=response.text.splitlines()
+
+for i in urlList:
+    if i in urlValues:
+         urlValues[i]+=1
+    else:    
+        urlValues[i]=1
+
+#print the one which appears highest times
+highest = urlList[0]
+for i in urlValues:
+    if urlValues[i] > urlValues[highest]:
+        highest = i
+print(highest," ",urlValues[highest])
+#######################################################
+# s = "The quick brown fox jumps over the lazy dog. The dog, not amused, barked at the fox!"
+# Output: # the: 4# quick: 1# brown: 1# fox: 2# jumps: 1# over: 1# lazy: 1# dog: 2# not: 1# amused: 1# barked: 1# at: 1
+
+S = "The quick brown fox jumps over the lazy dog. The dog, not amused, barked at the fox!"
+s = S.lower()
+ns=''
+wordList = {}
+for i in s:
+    if i.isalnum() or i.isspace():
+        ns+=i
+fs = ns.split(" ")
+for i in fs:
+    if i in wordList:
+        wordList[i]+=1
+    else:
+        wordList[i]=1
+print(wordList)
+#######################################################
+# Output:
+# n = 3
+# *
+# * *
+# * * *
+# * *
+# *
+
+n=5
+for i in range(0,n):
+    print("* "*i)
+for j in range(n,0,-1):
+    print("* "*j)
+#######################################################
+# Question 1:
+# Find count of each digit in the given integer,
+# Usage of str() function and modules not allowed
+
+intList = {}
+n = 122333444455555123
+while n > 0:
+    k = int(n%10)
+    if k in intList:
+        intList[k]+=1
+    else:
+        intList[k]=1
+    n = int(n/10)
+print(intList)
+#######################################################
+-------------------------------------------------------------------------------------
+Observaibility
+
+Observability is the ability to understand the internal state of a system by analyzing the data it produces, including logs, metrics, and traces.
+
+Monitoring(Metrics): involves tracking system metrics like CPU usage, memory usage, and network performance. Provides alerts based on predefined thresholds and conditions
+
+Monitoring tells us what is happening.
+Logging(Logs): involves the collection of log data from various components of a system.
+
+Logging explains why it is happening.
+Tracing(Traces): involves tracking the flow of a request or transaction as it moves through different services and components within a system.
+
+Tracing shows how it is happening.
+
+how to export aws container metrics to prometheus or grafana
+Grafana architecture
+Prometheous architecture
+Splunk architecture and implementation
