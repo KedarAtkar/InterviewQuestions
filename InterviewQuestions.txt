@@ -120,6 +120,19 @@ healthcheck for the asg ? how will you know if certain node gets into any issue?
 privatelink
 multiple vpcs connection
 Outbound traffic is not able to go from pod
+What is private and public eks cluster
+Which ip does  api server use
+Non routable IPs
+Non usable IPs
+Alb vs nlb
+Health check allowed for nlb?
+Can we buy domain from route53?
+Why pod IPs generally are not routable
+If pod fails to pull image then what?
+If have to design vocal what will you consider?
+Is eks global or regional?
+In which file the token will be stored for k8s cluster
+If I have 3 ip ranges one is primary, service and secondary. From which pod  IP’s will be assigned ? API server will use which one? For ec2 instance ?
 -------------------------------------------------------------------------------------
 Docker:
 
@@ -129,6 +142,14 @@ Can u delete the image if its running the container , any way we can delete it w
 Multi-stage Dockerfile
 How to reduce the size of the image
 Types of networks
+What if my dockerfile is named as Dockefile1? How to execute this one? Which flag to use?
+What if I have multiple dockerfiles in same directory like dockerfile1, dockerfile2 and I execute the below command, what will be the output?
+“Docker build .”
+---docker build . looks for a file named Dockerfile only.
+If only Dockerfile1 and Dockerfile2 exist, it will fail.
+Use -f to specify which Dockerfile to use.
+How can I restrict or assign the access to the container?—-DockerProfile
+What is 9000 access ?
 -------------------------------------------------------------------------------------
 Terraform:
 
@@ -175,7 +196,14 @@ terraform import
 terraform data source
 Terraform immutability and mutable 
 What is backend in terraform?
-Terraform loop	
+Terraform loop
+Name of state file
+Flow in which you will execute terraform commands ?
+—-from terraform I it till terraform destroy
+What will happen if we don’t execute terraform plan before terraform apply?
+I want to use different variable values for dev stg qa, how to do that?
+If I use secrets in terraform where can I see them in plain text ?
+Can I see them in the logs ? What if I use logs at debug level , will I be able to see secrets in plain text  in the log?
 -------------------------------------------------------------------------------------
 Linux:
 
@@ -216,6 +244,11 @@ Jenkins different slaves for diffferent branches (in script there is agent block
 Send the notification when the CI/CD job fails
 Work directory in which we can see the workspaces
 Parametrized pipeline
+Explain every step if you are asked to pull existing GitHub repo to local machine and make changes in it and then create anew branch and push it to github
+CMD and flag to create a new branch
+Where will you mention agents?
+I want to execute a block on success , failure and on both?
+Write a first step in Jenkins to checkout the source code from repo
 -------------------------------------------------------------------------------------
 Random:
 Process to deploy the hotfix
