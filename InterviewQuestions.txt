@@ -233,6 +233,59 @@ Continuous Delivery vs Continuous Deployment
 ----When code is deployed without any manual intervention after the CI part , it is referred as continuous deployment
 ----If it's delivered only when it is required, like taking down time from customer and then deploy and then do sanity,etc. Manual intervention is requied. 
 
+Explain every step if you are asked to pull existing GitHub repo to local machine and make changes in it and then create anew branch and push it to github
+CMD and flag to create a new branch.
+----git init
+	git clone <repo url>
+    	git branch <branch name> #this will create a branch but wont switch to it. 
+    	git checkout -b <branch name> #this will create a branch and switch to it.
+	git add . #this will select the changes you want to add to commit
+	git commit -m <commit message>
+	git log #shows commit logs
+	git diff <branch name> #shows difference between
+	git push <repo url> <branch name> #this will push the code to github. repo url will be same which was used when cloning the repo. branch name should be the one which you have created at your local machine. if its not it will throw error "error: src refspec test1 does not match any"
+
+Execute a block on success, failure and on both.
+----post {
+        always {
+            mail to: "${EMAIL_RECIPIENTS}",
+                 subject: "Jenkins Job '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) - Finished",
+                 body: "The job has completed. Check console output at ${env.BUILD_URL}"
+        }
+
+        success {
+            mail to: "${EMAIL_RECIPIENTS}",
+                 subject: "SUCCESS: Job '${env.JOB_NAME}' (#${env.BUILD_NUMBER})",
+                 body: "The job succeeded.\n\nConsole: ${env.BUILD_URL}"
+        }
+
+        failure {
+            mail to: "${EMAIL_RECIPIENTS}",
+                 subject: "FAILURE: Job '${env.JOB_NAME}' (#${env.BUILD_NUMBER})",
+                 body: "The job failed.\n\nConsole: ${env.BUILD_URL}"
+        }
+    }
+
+Write a first step in Jenkins to checkout the source code from repo.
+
+Where will you mention agents
+---- agent {
+        docker {
+            image 'maven:3.8.1-openjdk-11'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+----Along with this if we are using servers as our agents we can add them as below.
+	Manage Jenkins > Nodes > New Node
+
+While doing port forwarding/ mapping explain the ports.
+----docker run -d -p 9000:8080 jenkins/jenkins:lts
+	Host 9000 → You’ll open http://localhost:9000
+	Container 8080 → Jenkins still listens internally on 8080
+
+Work directory in which we can see the workspaces
+----C:\ProgramData\Jenkins\.jenkins\workspace
+
 Multibranch jenkins pipeline
 Sonarqube quality gates
 Maven
@@ -242,13 +295,8 @@ GitHub webhooks
 Tag in github(tag in github)
 Jenkins different slaves for diffferent branches (in script there is agent block there u can mention this)
 Send the notification when the CI/CD job fails
-Work directory in which we can see the workspaces
 Parametrized pipeline
-Explain every step if you are asked to pull existing GitHub repo to local machine and make changes in it and then create anew branch and push it to github
-CMD and flag to create a new branch
-Where will you mention agents?
-I want to execute a block on success , failure and on both?
-Write a first step in Jenkins to checkout the source code from repo
+
 -------------------------------------------------------------------------------------
 Random:
 Process to deploy the hotfix
