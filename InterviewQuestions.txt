@@ -35,8 +35,6 @@ identify with just watching the cidr block whether the subnet is private or publ
 	172.16.0.0 – 172.31.255.255
 	192.168.0.0 – 192.168.255.255
 
-how will you design the vpc and subnet for the 2 tier application. how many subnets?where will you put the load balancer ? where will you put the ec2 instances, in public or private subnt and why?
-
 vpc cidr block will be private or public ip?
 ----private
 
@@ -87,7 +85,8 @@ EC2 instance wants to access objects in the S3 bucket
 	-----Create VPC endpoint of type Gateway endpoint which will help you in connecting to S3 bucket. VPC endpoint will create private network to make connection from EC2 to S3
 	EC2 instance in public subnet:
 	----Create a role, attach the required policies and update the bucket policies if required.
-	
+
+how will you design the vpc and subnet for the 2 tier application. how many subnets?where will you put the load balancer ? where will you put the ec2 instances, in public or private subnt and why?
 Permisson boundary in AWS-IAM
 Root volume attached to ec2 ran out of space
 Which region are you using
@@ -208,9 +207,9 @@ Can I see them in the logs ? What if I use logs at debug level , will I be able 
 Linux:
 
 Basics error codes  403, 404, 401
-----401-
-----403-
-----404-
+----401-Unauthorized, The request is missing valid authentication credentials.
+----403-Forbidden, You are authenticated, but you do not have permission to access the resource.
+----404-Not Found, The server cannot find the requested resource.
 
 chown vs chmod command
 ----chown - change the ownership of file/directory
@@ -219,10 +218,23 @@ chown vs chmod command
 ssh command default port
 ----22
 
-Disk space issue du, df - h , top, htop, lsblk.
-Linux server slow performance(process using ps, size using df-h, top command etc)
-Particular directory in Linux how much memory particular file is consuming(du command)
+Create a cron job
+----* * * * * /script path
+	From left minute(0-59), hour(0-23), day of month(1-31), month of year(1-12), day of week(0,7) (0 and 7 are considered as Sunday)
 
+Disk space issue du, df - h , top, htop, lsblk.
+----du--Shows how much space files/directories are using.
+	df-- Shows filesystem-level disk usage and free space.
+	top / htop -- Shows CPU and memory usage by processes (real-time).
+	lsblk -- Lists block devices (disks and partitions).
+
+Linux server slow performance
+----process using ps 
+	size using df-h
+	CPU using top/htop
+
+Particular directory in Linux how much memory particular file is consuming
+----du -sh /path/to/directory
 -------------------------------------------------------------------------------------
 CI/CD:
 
@@ -286,10 +298,47 @@ While doing port forwarding/ mapping explain the ports.
 Work directory in which we can see the workspaces
 ----C:\ProgramData\Jenkins\.jenkins\workspace
 
-Multibranch jenkins pipeline
 Sonarqube quality gates
-Maven
+----SonarQube Quality Gates are a set of conditions or thresholds that determine whether a piece of code (or a project) is considered ready to move forward in your development pipeline.
+	Think of them as pass/fail criteria for code quality.
+	Few examples:
+		Condition: Bugs on New Code  ->  must be 0
+		Condition: Vulnerabilities on New Code -> must be 0
+		Condition: Coverage on New Code -> must be >= 80%
+		Condition: Duplicated Lines on New Code -> must be <= 3%
+
+
+Multibranch jenkins pipeline
+----A multibranch pipeline is a Jenkins pipeline setup that can automatically create and manage separate pipeline jobs for each branch in your source code repository.
+	example: If you have a repo "myApp" and it has branches like 'feature1', 'feature2', 'main', 'test', etc.
+	To create a multibranch pipeline for this repo you have to select the pipeline type as "Multibranch pipeline".
+	Mention the pipeline selecton criteria as wild card and mention 'feature*'.
+	So this will automatically discover 2 branches 'feature1', 'feature2' and will create a pipeline jobs for them.
+	The advantage is that I dont have to create and configure these 2 pipeline manually. they got configured automatically.
+
 Choice parameter in Jenkins
+----This lets us select parameter from drop down menu.
+	example:-
+		pipeline {
+		agent any
+		parameters {
+			choice(
+				name: 'ENVIRONMENT',
+				choices: ['dev', 'test', 'prod'],
+				description: 'Select the environment to deploy to'
+			)
+		}
+		stages {
+			stage('Show selection') {
+				steps {
+					echo "Selected environment: ${params.ENVIRONMENT}"
+				}
+			}
+		}
+	}	
+
+Maven
+
 Cache made from Jenkins needs to be removed -  set up bash scripting and corn tab
 GitHub webhooks
 Tag in github(tag in github)
